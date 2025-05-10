@@ -37,13 +37,16 @@ class Face_detect_crop:
             if onnx_file.find('_selfgen_')>0:
                 #print('ignore:', onnx_file)
                 continue
+            print('Loading model:', onnx_file)
             model = model_zoo.get_model(onnx_file)
+            print('Model taskname:', model.taskname)
             if model.taskname not in self.models:
                 print('find model:', onnx_file, model.taskname)
                 self.models[model.taskname] = model
             else:
                 print('duplicated model task type, ignore:', onnx_file, model.taskname)
                 del model
+        print('Available models:', list(self.models.keys()))
         assert 'detection' in self.models
         self.det_model = self.models['detection']
 
@@ -62,7 +65,6 @@ class Face_detect_crop:
 
     def get(self, img, crop_size, max_num=0):
         bboxes, kpss = self.det_model.detect(img,
-                                             threshold=self.det_thresh,
                                              max_num=max_num,
                                              metric='default')
         if bboxes.shape[0] == 0:

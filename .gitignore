@@ -143,3 +143,5 @@ wandb/
 temp_results/
 output/*.*
 .DS_Store
+demo_file/me.jpg
+demo_file/template.png
