@@ -66,7 +66,7 @@ class TrainOptions:
 
         self.parser.add_argument("--Arc_path", type=str, default='arcface_model/arcface_checkpoint.tar', help="run ONNX model via TRT")
         self.parser.add_argument("--total_step", type=int, default=1000000, help='total training step')
-        self.parser.add_argument("--log_frep", type=int, default=200, help='frequence for printing log information')
+        self.parser.add_argument("--log_frep", type=int, default=1, help='frequence for printing log information')
         self.parser.add_argument("--sample_freq", type=int, default=1000, help='frequence for sampling')
         self.parser.add_argument("--model_freq", type=int, default=10000, help='frequence for saving the model')
 
@@ -114,6 +114,8 @@ if __name__ == '__main__':
     
     log_path = os.path.join(opt.checkpoints_dir, opt.name, 'summary')
 
+    print('log_path', log_path)
+
     if not os.path.exists(log_path):
         os.makedirs(log_path)
 
@@ -144,7 +146,7 @@ if __name__ == '__main__':
         logger              = tensorboard_writer
         
     log_name = os.path.join(opt.checkpoints_dir, opt.name, 'loss_log.txt')
-
+    print('log_name', log_name)
     with open(log_name, "a") as log_file:
         now = time.strftime("%c")
         log_file.write('================ Training Loss (%s) ================\n' % now)
@@ -234,14 +236,18 @@ if __name__ == '__main__':
         if (step + 1) % opt.log_frep == 0:
             # errors = {k: v.data.item() if not isinstance(v, int) else v for k, v in loss_dict.items()}
             errors = {
-                "G_Loss":loss_Gmain.item(),
-                "G_ID":loss_G_ID.item(),
-                "G_Rec":loss_G_Rec.item(),
-                "G_feat_match":feat_match_loss.item(),
-                "D_fake":loss_Dgen.item(),
-                "D_real":loss_Dreal.item(),
-                "D_loss":loss_D.item()
+                "G_Loss": loss_Gmain.item(),
+                "G_ID": loss_G_ID.item(),
+                "G_feat_match": feat_match_loss.item(),
+                "D_fake": loss_Dgen.item(),
+                "D_real": loss_Dreal.item(),
+                "D_loss": loss_D.item()
             }
+            if step % 2 == 0:
+                errors["G_Rec"] = loss_G_Rec.item()
+            else:
+                errors["G_Rec"] = 0.0
+
             if opt.use_tensorboard:
                 for tag, value in errors.items():
                     logger.add_scalar(tag, value, step)

@@ -65,19 +65,20 @@ class SwappingDataset(data.Dataset):
         """Preprocess the Swapping dataset."""
         print("processing Swapping dataset images...")
 
-        temp_path   = os.path.join(self.image_dir,'*/')
-        pathes      = glob.glob(temp_path)
+        temp_path = os.path.join(self.image_dir, 'VGGface2_ffhq_align_512_bygfpgan_part*/*/')
+        pathes = glob.glob(temp_path)
         self.dataset = []
         for dir_item in pathes:
-            join_path = glob.glob(os.path.join(dir_item,'*.jpg'))
-            print("processing %s"%dir_item,end='\r')
+            join_path = glob.glob(os.path.join(dir_item, '*.jpg'))
+            print("processing %s" % dir_item, end='\r')
             temp_list = []
             for item in join_path:
                 temp_list.append(item)
-            self.dataset.append(temp_list)
+            if temp_list:  # 只添加非空列表
+                self.dataset.append(temp_list)
         random.seed(self.random_seed)
         random.shuffle(self.dataset)
-        print('Finished preprocessing the Swapping dataset, total dirs number: %d...'%len(self.dataset))
+        print('Finished preprocessing the Swapping dataset, total dirs number: %d...' % len(self.dataset))
              
     def __getitem__(self, index):
         """Return two src domain images and two dst domain images."""
