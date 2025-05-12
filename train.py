@@ -45,7 +45,7 @@ class TrainOptions:
         self.parser.add_argument('--batchSize', type=int, default=4, help='input batch size')       
 
         # for displays
-        self.parser.add_argument('--use_tensorboard', type=str2bool, default='False')
+        self.parser.add_argument('--use_tensorboard', type=str2bool, default='True')
 
         # for training
         self.parser.add_argument('--dataset', type=str, default="/path/to/VGGFace2", help='path to the face swapping dataset')
