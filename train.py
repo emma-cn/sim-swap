@@ -179,6 +179,7 @@ if __name__ == '__main__':
     # Training Cycle
     start_time = time.time()
     for step in range(start, total_step):
+        step_start_time = time.time()
         model.netG.train()
         for interval in range(2):
             random.shuffle(randindex)
@@ -236,6 +237,13 @@ if __name__ == '__main__':
         ### print out errors
         # Print out log info
         if (step + 1) % opt.log_frep == 0:
+            # Calculate step duration
+            step_duration = time.time() - step_start_time
+            step_hours = int(step_duration // 3600)
+            step_minutes = int((step_duration % 3600) // 60)
+            step_seconds = int(step_duration % 60)
+            step_duration_str = f"{step_hours:02d}:{step_minutes:02d}:{step_seconds:02d}"
+
             # errors = {k: v.data.item() if not isinstance(v, int) else v for k, v in loss_dict.items()}
             errors = {
                 "G_Loss": loss_Gmain.item(),
@@ -243,7 +251,8 @@ if __name__ == '__main__':
                 "G_feat_match": feat_match_loss.item(),
                 "D_fake": loss_Dgen.item(),
                 "D_real": loss_Dreal.item(),
-                "D_loss": loss_D.item()
+                "D_loss": loss_D.item(),
+                "Step_Duration": step_duration_str
             }
             if step % 2 == 0:
                 errors["G_Rec"] = loss_G_Rec.item()
@@ -261,9 +270,10 @@ if __name__ == '__main__':
             if opt.use_tensorboard:
                 for tag, value in errors.items():
                     logger.add_scalar(tag, value, step)
-            message = f'[Time: {current_time}, Duration: {duration_str}] (step: {step}) '
+            message = f'[Time: {current_time}, Duration: {duration_str}, Step: {step_duration_str}] (step: {step}) '
             for k, v in errors.items():
-                message += '%s: %.3f ' % (k, v)
+                if k != "Step_Duration":  # Don't print duration twice
+                    message += '%s: %.3f ' % (k, v)
 
             print(message)
             with open(log_name, "a") as log_file:
