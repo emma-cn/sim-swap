@@ -252,7 +252,7 @@ if __name__ == '__main__':
                 "D_fake": loss_Dgen.item(),
                 "D_real": loss_Dreal.item(),
                 "D_loss": loss_D.item(),
-                "Step_Duration": step_duration_str
+                "Step_Duration": step_duration  # Use seconds instead of string
             }
             if step % 2 == 0:
                 errors["G_Rec"] = loss_G_Rec.item()

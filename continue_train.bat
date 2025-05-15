@@ -17,44 +17,37 @@ if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
 :: Function to log messages
 call :log "Starting continue training script..."
 
-:: Check if project directory exists
-if not exist "%PROJECT_DIR%" (
-    call :log "Error: Project directory not found: %PROJECT_DIR%"
-    exit /b 1
-)
-
 :: Switch to project directory
-call :log "Switching to project directory: %PROJECT_DIR%"
-cd /d "%PROJECT_DIR%"
-if errorlevel 1 (
+cd /d "%PROJECT_DIR%" || (
     call :log "Error: Failed to switch to project directory"
     exit /b 1
 )
 
-:: Check if conda environment exists
-call :log "Checking conda environment..."
-conda env list | findstr /C:"%CONDA_ENV%" >nul
-if errorlevel 1 (
-    call :log "Error: Conda environment '%CONDA_ENV%' not found"
-    exit /b 1
-)
-
 :: Activate conda environment and run training
-call :log "Activating conda environment and starting training..."
-call conda activate %CONDA_ENV%
-if errorlevel 1 (
+call :log "Activating conda environment..."
+call conda activate %CONDA_ENV% || (
     call :log "Error: Failed to activate conda environment"
     exit /b 1
 )
 
-:: Run training with continue parameters
+:: Run training
 call :log "Starting continue training process..."
 call :log "Log file location: %LOG_FILE%"
 
-:: Run training with continue parameters
-python train.py --continue_train True --load_pretrain ./checkpoints/simswap512 --which_epoch latest >> "%LOG_FILE%" 2>&1
-if errorlevel 1 (
-    call :log "Error: Training failed with exit code %errorlevel%"
+:: Create a temporary file for error output
+set "ERROR_FILE=%TEMP%\training_error.txt"
+
+:: Run training and capture output
+python train.py --continue_train True --load_pretrain ./checkpoints/simswap512 --which_epoch latest >> "%LOG_FILE%" 2> "%ERROR_FILE%"
+set "TRAIN_ERROR=%errorlevel%"
+
+:: If there was an error, display the error message
+if %TRAIN_ERROR% neq 0 (
+    call :log "Error: Training failed with exit code %TRAIN_ERROR%"
+    call :log "Error details:"
+    type "%ERROR_FILE%" | findstr /v "^$" >> "%LOG_FILE%"
+    type "%ERROR_FILE%" | findstr /v "^$"
+    del "%ERROR_FILE%"
     exit /b 1
 )
 
