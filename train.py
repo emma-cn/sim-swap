@@ -15,6 +15,7 @@ import time
 import random
 import argparse
 import numpy as np
+import datetime
 
 import torch
 import torch.nn.functional as F
@@ -176,6 +177,7 @@ if __name__ == '__main__':
     model.netD.feature_network.requires_grad_(False)
 
     # Training Cycle
+    start_time = time.time()
     for step in range(start, total_step):
         model.netG.train()
         for interval in range(2):
@@ -248,10 +250,18 @@ if __name__ == '__main__':
             else:
                 errors["G_Rec"] = 0.0
 
+            # Add current time and training duration
+            current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            elapsed_time = time.time() - start_time
+            hours = int(elapsed_time // 3600)
+            minutes = int((elapsed_time % 3600) // 60)
+            seconds = int(elapsed_time % 60)
+            duration_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+
             if opt.use_tensorboard:
                 for tag, value in errors.items():
                     logger.add_scalar(tag, value, step)
-            message = '( step: %d, ) ' % (step)
+            message = f'[Time: {current_time}, Duration: {duration_str}] (step: {step}) '
             for k, v in errors.items():
                 message += '%s: %.3f ' % (k, v)
 
