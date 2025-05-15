@@ -48,7 +48,7 @@ class TrainOptions:
         self.parser.add_argument('--use_tensorboard', type=str2bool, default='True')
 
         # for training
-        self.parser.add_argument('--dataset', type=str, default="D:\llm\data\train_data\FFHQ_align", help='path to the face swapping dataset')
+        self.parser.add_argument('--dataset', type=str, default="../../data/train_data/FFHQ_align", help='path to the face swapping dataset')
         self.parser.add_argument('--continue_train', type=str2bool, default='False', help='continue training: load the latest model')
         self.parser.add_argument('--load_pretrain', type=str, default='./checkpoints/simswap512', help='load the pretrained model from the specified location')
         self.parser.add_argument('--which_epoch', type=str, default='10000', help='which epoch to load? set to latest to use latest cached model')
