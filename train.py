@@ -36,28 +36,28 @@ class TrainOptions:
         self.initialized = False
         
     def initialize(self):
-        self.parser.add_argument('--name', type=str, default='simswap', help='name of the experiment. It decides where to store samples and models')
+        self.parser.add_argument('--name', type=str, default='simswap512', help='name of the experiment. It decides where to store samples and models')
         self.parser.add_argument('--gpu_ids', default='0')
         self.parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
         self.parser.add_argument('--isTrain', type=str2bool, default='True')
 
         # input/output sizes       
-        self.parser.add_argument('--batchSize', type=int, default=4, help='input batch size')       
+        self.parser.add_argument('--batchSize', type=int, default=20, help='input batch size')       
 
         # for displays
         self.parser.add_argument('--use_tensorboard', type=str2bool, default='True')
 
         # for training
-        self.parser.add_argument('--dataset', type=str, default="/path/to/VGGFace2", help='path to the face swapping dataset')
+        self.parser.add_argument('--dataset', type=str, default="D:\llm\data\train_data\FFHQ_align", help='path to the face swapping dataset')
         self.parser.add_argument('--continue_train', type=str2bool, default='False', help='continue training: load the latest model')
-        self.parser.add_argument('--load_pretrain', type=str, default='./checkpoints/simswap224_test', help='load the pretrained model from the specified location')
+        self.parser.add_argument('--load_pretrain', type=str, default='./checkpoints/simswap512', help='load the pretrained model from the specified location')
         self.parser.add_argument('--which_epoch', type=str, default='10000', help='which epoch to load? set to latest to use latest cached model')
         self.parser.add_argument('--phase', type=str, default='train', help='train, val, test, etc')
         self.parser.add_argument('--niter', type=int, default=10000, help='# of iter at starting learning rate')
         self.parser.add_argument('--niter_decay', type=int, default=10000, help='# of iter to linearly decay learning rate to zero')
         self.parser.add_argument('--beta1', type=float, default=0.0, help='momentum term of adam')
         self.parser.add_argument('--lr', type=float, default=0.0004, help='initial learning rate for adam')
-        self.parser.add_argument('--Gdeep', type=str2bool, default='False')
+        self.parser.add_argument('--Gdeep', type=str2bool, default='True')
 
         # for discriminators         
         self.parser.add_argument('--lambda_feat', type=float, default=10.0, help='weight for feature matching loss')
